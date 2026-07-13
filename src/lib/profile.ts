@@ -14,7 +14,7 @@ import {
 
 export const profile = {
   name: "Krishiv Arora",
-  title: "AI Engineer / Full Stack Developer",
+  title: "Engineering Student diving into AI | Keen Learner",
   email: "krishivarora150@gmail.com",
   phone: "+91-9557187881",
   githubUsername: "Krishiv1611",
@@ -26,7 +26,7 @@ export const profile = {
     leetcode: "https://leetcode.com/u/krishivarora25/",
     codechef: "https://www.codechef.com/users/krishivarora25",
     email: "mailto:krishivarora150@gmail.com",
-    resume: "/Krishiv-resume.pdf"
+    resume: "/2401030298_Krishiv_Arora.pdf"
   },
   summary:
     "Computer Science engineering student at JIIT building AI-native products across RAG, autonomous agents, backend systems, and polished full-stack experiences.",
@@ -39,6 +39,7 @@ export const profile = {
 
 export const navItems = [
   { label: "About", href: "#about" },
+  { label: "Experience", href: "#experience" },
   { label: "Skills", href: "#skills" },
   { label: "Projects", href: "#projects" },
   { label: "LeetCode", href: "#leetcode" },
@@ -53,7 +54,7 @@ export const socialLinks = [
 ];
 
 export const highlights = [
-  { label: "LeetCode Problems", value: "400+", detail: "Data structures and algorithms" },
+  { label: "LeetCode Problems", value: "500+", detail: "Data structures and algorithms" },
   { label: "CodeChef Rating", value: "3 Star", detail: "Competitive programming" },
   { label: "Featured Products", value: "3", detail: "AI and full-stack systems" },
   { label: "Education", value: "JIIT", detail: "B.Tech CSE, 2024-2028" }
@@ -148,7 +149,29 @@ export const techCategories = [
   }
 ];
 
+export const experience = [
+  {
+    role: "Summer Trainee – Software Engineering",
+    company: "GlobalLogic (Hitachi Group)",
+    location: "India",
+    duration: "Jun 2026 – Present",
+    bullets: [
+      "Receiving mentorship from senior software engineers on production-grade development, system design, and agile practices.",
+      "Designing and developing Compass, a full-stack AI coding assistant as the capstone project, applying software engineering best practices."
+    ]
+  }
+];
+
 export const featuredProjects = [
+  {
+    name: "Compass",
+    href: "https://github.com/Krishiv1611/Compass",
+    demo: "",
+    stack: ["Python", "FastAPI", "React", "TypeScript", "LangGraph", "PostgreSQL", "ChromaDB"],
+    description: "Full-stack AI coding assistant enabling developers to debug and refactor code via natural language.",
+    impact: "Designed agentic task orchestration using LangGraph with tool-calling nodes. Integrated MCP adapters and a codebase-aware retrieval pipeline.",
+    icon: Bot
+  },
   {
     name: "Synora",
     href: "https://github.com/Krishiv1611/Synora",
@@ -170,17 +193,6 @@ export const featuredProjects = [
     impact:
       "Engineered RAG-based semantic matching, resume rewriting workflows, ranking logic, and modular agent orchestration.",
     icon: BrainCircuit
-  },
-  {
-    name: "RideMates",
-    href: "https://github.com/Krishiv1611/RideMates",
-    demo: "",
-    stack: ["MongoDB", "Express", "React", "Node.js", "Socket.io"],
-    description:
-      "Full-stack ride-sharing app with dynamic ride creation, matching, live chat, and secure dashboards.",
-    impact:
-      "Implemented realtime communication, JWT auth, seat management, and responsive cross-device interfaces.",
-    icon: Server
   }
 ];
 

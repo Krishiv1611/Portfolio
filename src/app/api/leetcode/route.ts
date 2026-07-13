@@ -98,6 +98,7 @@ export async function GET() {
     const stats: LeetCodeStats = {
       username: user.username,
       ranking: user.profile?.ranking ?? null,
+      contestRating: null,
       totalSolved,
       easySolved,
       mediumSolved,

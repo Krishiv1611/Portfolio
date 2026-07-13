@@ -12,10 +12,11 @@ import { clamp } from "@/lib/utils";
 const fallbackStats: LeetCodeStats = {
   username: profile.leetcodeUsername,
   ranking: null,
-  totalSolved: 400,
-  easySolved: 160,
-  mediumSolved: 200,
-  hardSolved: 40,
+  contestRating: 1650,
+  totalSolved: 500,
+  easySolved: 200,
+  mediumSolved: 250,
+  hardSolved: 50,
   calendar: {}
 };
 
@@ -36,7 +37,14 @@ export function LeetCodeSection() {
       })
       .then((data) => {
         if (active) {
-          setStats(data);
+          setStats({
+            ...data,
+            totalSolved: Math.max(data.totalSolved || 0, fallbackStats.totalSolved),
+            easySolved: Math.max(data.easySolved || 0, fallbackStats.easySolved),
+            mediumSolved: Math.max(data.mediumSolved || 0, fallbackStats.mediumSolved),
+            hardSolved: Math.max(data.hardSolved || 0, fallbackStats.hardSolved),
+            contestRating: fallbackStats.contestRating
+          });
         }
       })
       .catch(() => {
@@ -117,7 +125,7 @@ export function LeetCodeSection() {
 
           <div className="mt-7 grid grid-cols-2 gap-3">
             <MetricCard icon={Award} label="CodeChef" value="3 Star" />
-            <MetricCard icon={Activity} label="Ranking" value={stats.ranking ? stats.ranking.toLocaleString() : "Live"} />
+            <MetricCard icon={Activity} label="Contest Rating" value={stats.contestRating ? stats.contestRating.toString() : "1650"} />
           </div>
         </motion.div>
 
@@ -161,10 +169,10 @@ function MetricCard({
   value: string;
 }) {
   return (
-    <div className="rounded-2xl border border-white/10 bg-white/[0.035] p-4">
-      <Icon className="h-5 w-5 text-primary" />
-      <p className="mt-4 text-xs uppercase tracking-[0.18em] text-slate-500">{label}</p>
-      <p className="mt-1 font-semibold text-white">{value}</p>
+    <div className="rounded-2xl border border-white/10 bg-white/[0.035] p-4 min-w-0">
+      <Icon className="h-5 w-5 text-primary shrink-0" />
+      <p className="mt-4 truncate text-[10px] uppercase tracking-[0.1em] text-slate-500 sm:text-xs sm:tracking-[0.18em]" title={label}>{label}</p>
+      <p className="mt-1 truncate font-semibold text-white" title={value}>{value}</p>
     </div>
   );
 }

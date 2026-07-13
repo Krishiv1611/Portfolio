@@ -15,6 +15,7 @@ export type GitHubRepo = {
 export type LeetCodeStats = {
   username: string;
   ranking: number | null;
+  contestRating: number | null;
   totalSolved: number;
   easySolved: number;
   mediumSolved: number;
