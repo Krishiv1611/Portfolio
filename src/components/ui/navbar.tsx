@@ -1,92 +1,146 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { animate, createScope } from "animejs";
 import { Download, Menu, X } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { navItems, profile } from "@/lib/profile";
 import { cn } from "@/lib/utils";
 
 export function Navbar() {
+  const rootRef = useRef<HTMLElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 16);
+    const root = rootRef.current;
+    if (!root) return;
+
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    const scope = createScope({ root }).add(() => {
+      animate("[data-nav-shell]", {
+        opacity: [0, 1],
+        translateY: [-14, 0],
+        duration: 700,
+        ease: "outExpo"
+      });
+    });
+
+    return () => scope.revert();
+  }, []);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 36);
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  useEffect(() => {
+    const menu = menuRef.current;
+    if (!menu) return;
+
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      menu.style.opacity = open ? "1" : "0";
+      menu.style.transform = open ? "translateY(0)" : "translateY(-10px)";
+      return;
+    }
+
+    const control = animate(menu, {
+      opacity: open ? [0, 1] : [1, 0],
+      translateY: open ? [-10, 0] : [0, -10],
+      duration: open ? 320 : 190,
+      ease: open ? "outExpo" : "inQuad"
+    });
+
+    return () => {
+      control.revert();
+    };
+  }, [open]);
+
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setOpen(false);
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, []);
+
   return (
-    <motion.header
-      className="fixed left-0 right-0 top-4 z-40 px-4"
-      initial={{ opacity: 0, y: -20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
-    >
+    <header ref={rootRef} className="fixed inset-x-0 top-0 z-40">
       <nav
+        data-nav-shell
+        aria-label="Primary navigation"
         className={cn(
-          "mx-auto flex w-full max-w-6xl items-center justify-between rounded-full border px-4 py-3 transition-all duration-300",
-          scrolled
-            ? "border-white/10 bg-slate-950/72 shadow-card backdrop-blur-2xl"
-            : "border-white/5 bg-white/[0.035] backdrop-blur-xl"
+          "border-b px-4 text-paper transition-[background-color,border-color] duration-300",
+          scrolled || open
+            ? "border-white/12 bg-ink/92 backdrop-blur-xl"
+            : "border-white/10 bg-ink/45 backdrop-blur-md"
         )}
       >
-        <a href="#home" className="focus-ring rounded-full text-sm font-semibold tracking-tight text-white">
-          Krishiv<span className="text-primary">.</span>
-        </a>
+        <div className="mx-auto flex h-[68px] max-w-[1240px] items-center justify-between">
+          <a href="#home" className="focus-ring rounded-sm text-sm font-semibold">
+            Krishiv Arora
+          </a>
 
-        <div className="hidden items-center gap-1 md:flex">
-          {navItems.map((item) => (
-            <a
-              key={item.href}
-              href={item.href}
-              className="focus-ring rounded-full px-3 py-2 text-sm text-slate-300 transition hover:bg-white/8 hover:text-white"
-            >
-              {item.label}
-            </a>
-          ))}
+          <div className="hidden items-center gap-1 lg:flex">
+            {navItems.map((item) => (
+              <a
+                key={item.href}
+                href={item.href}
+                className="focus-ring rounded-md px-3 py-2 text-sm text-white/58 transition-colors duration-200 hover:text-white"
+              >
+                {item.label}
+              </a>
+            ))}
+          </div>
+
+          <a
+            href={profile.links.resume}
+            download
+            className="pressable focus-ring hidden min-h-10 items-center gap-2 rounded-md border border-white/16 bg-white/[0.06] px-4 text-sm font-medium text-white hover:border-white/32 hover:bg-white/[0.1] sm:flex"
+          >
+            <Download className="h-4 w-4" />
+            Resume
+          </a>
+
+          <button
+            type="button"
+            className="pressable focus-ring flex h-11 w-11 items-center justify-center rounded-md border border-white/16 text-white lg:hidden"
+            onClick={() => setOpen((value) => !value)}
+            aria-label={open ? "Close navigation" : "Open navigation"}
+            aria-expanded={open}
+            aria-controls="mobile-navigation"
+          >
+            {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          </button>
         </div>
-
-        <a
-          href={profile.links.resume}
-          className="focus-ring hidden items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-semibold text-slate-950 transition hover:bg-primary md:flex"
-          download
-        >
-          <Download className="h-4 w-4" />
-          Resume
-        </a>
-
-        <button
-          type="button"
-          className="focus-ring rounded-full border border-white/10 p-2 text-white md:hidden"
-          onClick={() => setOpen((value) => !value)}
-          aria-label="Toggle navigation"
-          aria-expanded={open}
-        >
-          {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-        </button>
       </nav>
 
-      {open ? (
-        <motion.div
-          className="mx-auto mt-3 max-w-6xl rounded-3xl border border-white/10 bg-slate-950/90 p-3 shadow-card backdrop-blur-2xl md:hidden"
-          initial={{ opacity: 0, y: -12 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -12 }}
-        >
-          {navItems.map((item) => (
-            <a
-              key={item.href}
-              href={item.href}
-              className="block rounded-2xl px-4 py-3 text-sm text-slate-300 hover:bg-white/8 hover:text-white"
-              onClick={() => setOpen(false)}
-            >
-              {item.label}
-            </a>
-          ))}
-        </motion.div>
-      ) : null}
-    </motion.header>
+      <div
+        ref={menuRef}
+        id="mobile-navigation"
+        aria-hidden={!open}
+        className={cn(
+          "mx-3 mt-2 border border-white/12 bg-[#0a0a0c]/98 p-2 shadow-lift backdrop-blur-xl lg:hidden",
+          open ? "pointer-events-auto" : "pointer-events-none"
+        )}
+        style={{ opacity: 0, transform: "translateY(-10px)" }}
+      >
+        {navItems.map((item, index) => (
+          <a
+            key={item.href}
+            href={item.href}
+            tabIndex={open ? 0 : -1}
+            className="focus-ring flex min-h-12 items-center justify-between rounded-md px-4 text-sm text-white/66 transition-colors duration-200 hover:bg-white/[0.05] hover:text-white"
+            onClick={() => setOpen(false)}
+          >
+            {item.label}
+            <span className="font-mono text-[10px] text-white/28">0{index + 1}</span>
+          </a>
+        ))}
+      </div>
+    </header>
   );
 }

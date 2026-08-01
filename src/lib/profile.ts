@@ -7,42 +7,38 @@ import {
   Database,
   Mail,
   Server,
-  Sparkles,
   Terminal,
   Workflow
 } from "lucide-react";
 
 export const profile = {
   name: "Krishiv Arora",
-  title: "Engineering Student diving into AI | Keen Learner",
+  title: "Aspiring Full-Stack & AI Engineer",
   email: "krishivarora150@gmail.com",
   phone: "+91-9557187881",
+  location: "New Delhi, India",
   githubUsername: "Krishiv1611",
   leetcodeUsername: "krishivarora25",
   codechefUsername: "krishivarora25",
   links: {
     github: "https://github.com/Krishiv1611",
-    linkedin: "https://linkedin.com/in/krishivarora25",
+    linkedin: "https://www.linkedin.com/in/krishivarora25",
     leetcode: "https://leetcode.com/u/krishivarora25/",
     codechef: "https://www.codechef.com/users/krishivarora25",
     email: "mailto:krishivarora150@gmail.com",
-    resume: "/2401030298_Krishiv_Arora.pdf"
+    resume: "/Krishiv-Arora-Resume.pdf"
   },
   summary:
-    "Computer Science engineering student at JIIT building AI-native products across RAG, autonomous agents, backend systems, and polished full-stack experiences.",
-  taglines: [
-    "Building autonomous AI products that feel useful.",
-    "Engineering RAG, agents, and production web systems.",
-    "Turning complex workflows into fast, elegant software."
-  ]
+    "Third-year B.Tech Computer Science student at JIIT, currently training at GlobalLogic and building full-stack and applied AI systems.",
+  availability: "Open to software engineering internships, applied AI product teams, and roles where I can grow across the stack."
 };
 
 export const navItems = [
   { label: "About", href: "#about" },
   { label: "Experience", href: "#experience" },
+  { label: "Work", href: "#projects" },
   { label: "Skills", href: "#skills" },
-  { label: "Projects", href: "#projects" },
-  { label: "LeetCode", href: "#leetcode" },
+  { label: "Activity", href: "#activity" },
   { label: "Resume", href: "#resume" },
   { label: "Contact", href: "#contact" }
 ];
@@ -53,163 +49,168 @@ export const socialLinks = [
   { label: "Email", href: profile.links.email, icon: Mail }
 ];
 
-export const highlights = [
-  { label: "LeetCode Problems", value: "500+", detail: "Data structures and algorithms" },
-  { label: "CodeChef Rating", value: "3 Star", detail: "Competitive programming" },
-  { label: "Featured Products", value: "3", detail: "AI and full-stack systems" },
-  { label: "Education", value: "JIIT", detail: "B.Tech CSE, 2024-2028" }
+export const proofPoints = [
+  { value: "500+", label: "LeetCode problems", note: "Resume-verified achievement" },
+  { value: "3 Star", label: "CodeChef", note: "Competitive programming" },
+  { value: "2nd", label: "Execute 26.2", note: "Knuth Programming Hub" },
+  { value: "100+", label: "Students mentored", note: "DSA and development" }
 ];
 
 export const interests = [
-  "AI Agents",
-  "Generative AI",
-  "RAG Systems",
-  "Backend Architecture",
-  "Realtime Apps",
-  "Product Engineering"
-];
-
-export const skillTags = [
-  "TypeScript",
-  "JavaScript",
-  "Python",
-  "C++",
-  "Next.js",
-  "React",
-  "FastAPI",
-  "Node.js",
-  "Express",
-  "Tailwind CSS",
-  "LangChain",
-  "LangGraph",
-  "PostgreSQL",
-  "MongoDB",
-  "Docker"
+  "Agentic AI",
+  "Retrieval systems",
+  "Backend architecture",
+  "Developer tools",
+  "Realtime products",
+  "Product engineering"
 ];
 
 export const skillPathways = [
   {
-    id: "frontend",
-    label: "Frontend",
-    icon: Blocks,
-    color: "#67e8f9",
+    id: "ai",
+    label: "AI systems",
+    icon: BrainCircuit,
+    color: "#f5f5f7",
     summary:
-      "I use this path to build responsive, high-polish interfaces with strong interaction design and production ergonomics.",
-    nodes: ["HTML", "CSS", "JavaScript", "TypeScript", "React", "Next.js", "Tailwind CSS"]
+      "Agent orchestration, retrieval, embeddings, evaluation, and LLM workflows designed as product systems.",
+    nodes: ["Python", "LangChain", "LangGraph", "RAG", "Gemini", "ChromaDB", "pgvector"]
   },
   {
     id: "backend",
     label: "Backend",
     icon: Server,
-    color: "#a7f3d0",
+    color: "#c8c8ce",
     summary:
-      "This stack powers APIs, auth, realtime workflows, persistence, and deployable services that can scale past demos.",
-    nodes: ["Node.js", "Express.js", "FastAPI", "PostgreSQL", "MongoDB", "Docker"]
+      "Typed APIs, authentication, data models, realtime events, persistence, and containerized services.",
+    nodes: ["FastAPI", "Node.js", "Express.js", "PostgreSQL", "MongoDB", "Socket.io", "Docker"]
   },
   {
-    id: "ai",
-    label: "AI / GenAI",
-    icon: BrainCircuit,
-    color: "#c4b5fd",
+    id: "frontend",
+    label: "Frontend",
+    icon: Blocks,
+    color: "#98989f",
     summary:
-      "I combine retrieval, agents, embeddings, voice, and LLM orchestration to ship AI workflows with product value.",
-    nodes: ["Python", "LangChain", "LangGraph", "RAG", "Gemini", "Vapi", "pgvector"]
+      "Responsive product interfaces with clear interaction states, accessible controls, and measured motion.",
+    nodes: ["TypeScript", "JavaScript", "React", "Next.js", "Tailwind CSS", "Vite"]
   },
   {
-    id: "systems",
-    label: "Systems / Tools",
+    id: "foundations",
+    label: "Foundations",
     icon: Terminal,
-    color: "#fbbf24",
+    color: "#68686f",
     summary:
-      "This pathway keeps products shippable: version control, containers, cloud data, deployment, and clean API contracts.",
-    nodes: ["Git", "Docker", "Neon/PostgreSQL", "Vercel", "API Design"]
+      "Core computer science and engineering practices that keep systems understandable and maintainable.",
+    nodes: ["C++", "SQL", "DSA", "OOP", "DBMS", "Computer Networks", "Git"]
   }
 ] as const;
 
 export const techCategories = [
-  {
-    title: "Languages",
-    icon: Code2,
-    items: ["TypeScript", "JavaScript", "Python", "C++"]
-  },
-  {
-    title: "Frameworks",
-    icon: Workflow,
-    items: ["Next.js", "React.js", "FastAPI", "Node.js", "Express.js", "Tailwind CSS"]
-  },
-  {
-    title: "AI Stack",
-    icon: Bot,
-    items: ["LangChain", "LangGraph", "Gemini", "RAG", "Vapi", "pgvector"]
-  },
-  {
-    title: "Data & Tools",
-    icon: Database,
-    items: ["PostgreSQL", "MongoDB", "MySQL", "Docker", "Git", "Neon"]
-  }
+  { title: "Languages", icon: Code2, items: ["Python", "C++", "TypeScript", "JavaScript", "SQL"] },
+  { title: "AI engineering", icon: Bot, items: ["LangChain", "LangGraph", "RAG", "Gemini", "ChromaDB", "pgvector"] },
+  { title: "Product stack", icon: Workflow, items: ["React", "Next.js", "FastAPI", "Node.js", "Express.js", "Tailwind CSS"] },
+  { title: "Data and delivery", icon: Database, items: ["PostgreSQL", "MongoDB", "MySQL", "Docker", "Git", "Vercel"] }
 ];
 
 export const experience = [
   {
-    role: "Summer Trainee – Software Engineering",
-    company: "GlobalLogic (Hitachi Group)",
+    role: "Summer Trainee - Software Engineering",
+    company: "GlobalLogic, a Hitachi Group company",
     location: "India",
-    duration: "Jun 2026 – Present",
+    duration: "Jun 2026 - Present",
     bullets: [
-      "Receiving mentorship from senior software engineers on production-grade development, system design, and agile practices.",
-      "Designing and developing Compass, a full-stack AI coding assistant as the capstone project, applying software engineering best practices."
+      "Developing Compass as an individual project under an assigned mentor to reduce context switching across repository exploration, code changes, debugging, and review.",
+      "Implemented LangGraph workflows and repository-aware retrieval for Ask, Edit, and Plan modes with relevant code context and reviewable patches.",
+      "Built a FastAPI and React workbench with JWT authentication, PostgreSQL persistence, isolated workspaces, and approval controls for code changes."
+    ]
+  },
+  {
+    role: "Technical Volunteer & Mentor",
+    company: "AIML Hub, JIIT Noida",
+    location: "Noida, India",
+    duration: "Jul 2025 - May 2026",
+    bullets: [
+      "Mentored 100+ students in data structures, algorithms, competitive programming, and software development.",
+      "Organized technical workshops, coding events, and peer-learning sessions for student developers."
     ]
   }
 ];
 
-export const featuredProjects = [
-  {
-    name: "Compass",
-    href: "https://github.com/Krishiv1611/Compass",
-    demo: "",
-    stack: ["Python", "FastAPI", "React", "TypeScript", "LangGraph", "PostgreSQL", "ChromaDB"],
-    description: "Full-stack AI coding assistant enabling developers to debug and refactor code via natural language.",
-    impact: "Designed agentic task orchestration using LangGraph with tool-calling nodes. Integrated MCP adapters and a codebase-aware retrieval pipeline.",
+export const pinnedProjectDetails: Record<
+  string,
+  { kicker: string; description: string; impact: string; stack: string[]; icon: typeof Bot }
+> = {
+  compass: {
+    kicker: "AI developer workbench",
+    description: "A repository-aware workbench for asking questions, planning changes, editing code, debugging, and review.",
+    impact: "Built LangGraph Ask, Edit, and Plan workflows with reviewable patches, a FastAPI and React workbench, JWT authentication, PostgreSQL persistence, isolated workspaces, and approval controls.",
+    stack: ["Python", "FastAPI", "React", "LangGraph", "PostgreSQL"],
+    icon: Workflow
+  },
+  synora: {
+    kicker: "Omnichannel AI platform",
+    description: "An enterprise platform for creating text, voice, and phone-based AI support agents grounded in business knowledge.",
+    impact: "Implemented knowledge ingestion for text, Markdown, and URLs, then integrated Vapi webhooks for transcripts, recordings, summaries, and conversation metrics.",
+    stack: ["Next.js", "TypeScript", "PostgreSQL", "Vapi", "Tailwind CSS"],
     icon: Bot
   },
-  {
-    name: "Synora",
-    href: "https://github.com/Krishiv1611/Synora",
-    demo: "https://synora-dev.vercel.app/",
-    stack: ["Next.js", "PostgreSQL", "Gemini 2.5 Flash", "LangChain", "Vapi", "Docker"],
-    description:
-      "Autonomous B2B omnichannel AI platform for RAG-powered text and voice customer support agents.",
-    impact:
-      "Built multi-format ingestion, pgvector similarity search, team management, analytics, and webhook-driven summaries.",
-    icon: Sparkles
-  },
-  {
-    name: "Career Pilot AI",
-    href: "https://github.com/Krishiv1611/careerPilot",
-    demo: "https://career-pilot-frontend.vercel.app/",
-    stack: ["FastAPI", "React", "LangGraph", "LLMs", "Docker"],
-    description:
-      "Multi-agent career assistant that analyzes resumes, scores candidate profiles, and recommends targeted jobs.",
-    impact:
-      "Engineered RAG-based semantic matching, resume rewriting workflows, ranking logic, and modular agent orchestration.",
+  careerpilot: {
+    kicker: "Multi-agent career platform",
+    description: "Resume parsing, ATS analysis, semantic job matching, and application workflows coordinated by specialized agents.",
+    impact: "Orchestrated parsing, job matching, skill-gap analysis, and roadmap generation with LangGraph, semantic search, live job listings, JWT auth, and PostgreSQL.",
+    stack: ["Python", "FastAPI", "React", "LangGraph", "PostgreSQL"],
     icon: BrainCircuit
+  },
+  ridemates: {
+    kicker: "Realtime ride sharing",
+    description: "A full-stack ride-sharing product connecting drivers and passengers through booking and live communication flows.",
+    impact: "Implemented JWT and Google auth, ride creation and booking, request management, dashboards, and Socket.io chat.",
+    stack: ["React", "Node.js", "Express", "MongoDB", "Socket.io", "JWT"],
+    icon: Workflow
+  },
+  summarizeyou: {
+    kicker: "YouTube RAG extension",
+    description: "A Chrome extension that summarizes and answers questions about YouTube videos from their transcripts.",
+    impact: "Built multilingual transcript retrieval, LangChain and ChromaDB search, Groq inference, and persistent local chat history.",
+    stack: ["Python", "FastAPI", "LangChain", "ChromaDB", "Groq", "Chrome APIs"],
+    icon: Bot
+  },
+  "agentic-ragchatbot": {
+    kicker: "Agentic retrieval system",
+    description: "A modular RAG chatbot with a separate FastAPI backend and session-aware frontend.",
+    impact: "Structured a retrieve-evaluate-generate pipeline with vector storage, tool-ready agents, and persistent conversation context.",
+    stack: ["Python", "FastAPI", "RAG", "Vector search", "Agent orchestration"],
+    icon: BrainCircuit
+  },
+  virtualassistant: {
+    kicker: "JavaScript assistant",
+    description: "A public JavaScript assistant project from Krishiv's pinned GitHub work.",
+    impact: "Explore the repository for the latest implementation details and source history.",
+    stack: ["JavaScript"],
+    icon: Code2
   }
-];
+};
 
 export const resumeHighlights = [
   {
     title: "Education",
-    body: "B.Tech in Computer Science Engineering, Jaypee Institute of Information Technology, Noida.",
-    meta: "2024-2028"
+    body: "B.Tech in Computer Science Engineering at Jaypee Institute of Information Technology, Noida.",
+    meta: "CGPA 7.44 / 10"
   },
   {
-    title: "Technical Volunteer",
-    body: "AI/ML Hub, JIIT. Assisted workshops, mentored juniors, and helped organize coding sessions.",
-    meta: "2025-Present"
+    title: "Current work",
+    body: "GlobalLogic summer trainee building Compass with repository-aware Ask, Edit, and Plan workflows, reviewable patches, isolated workspaces, and approval controls.",
+    meta: "Jun 2026 - Present"
   },
   {
-    title: "Core Strengths",
-    body: "AI agents, RAG systems, backend architecture, realtime applications, and modern frontend systems.",
-    meta: "AI + Full Stack"
+    title: "Coding achievement",
+    body: "Secured second place in Execute 26.2, a team coding contest organized by Knuth Programming Hub, JIIT.",
+    meta: "May 2026"
+  },
+  {
+    title: "Competitive programming",
+    body: "Solved 500+ data structures and algorithms problems on LeetCode and achieved a 3-star CodeChef rating.",
+    meta: "Resume verified"
   }
 ];
+
+

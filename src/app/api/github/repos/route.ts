@@ -1,5 +1,4 @@
-import { NextResponse } from "next/server";
-import { pinnedRepoOrder } from "@/lib/github-projects";
+﻿import { NextResponse } from "next/server";
 import type { GitHubRepo } from "@/lib/types";
 
 type RawGitHubRepo = {
@@ -22,37 +21,30 @@ type RawGitHubRepo = {
 export const revalidate = 3600;
 
 async function getPinnedRepoRank(shouldRefresh: boolean) {
-  try {
-    const response = await fetch("https://github.com/Krishiv1611", {
-      headers: {
-        "User-Agent": "Krishiv portfolio"
-      },
-      ...(shouldRefresh ? { cache: "no-store" as const } : { next: { revalidate: 3600 } })
-    });
+  const response = await fetch("https://github.com/Krishiv1611", {
+    headers: { "User-Agent": "Krishiv portfolio" },
+    ...(shouldRefresh ? { cache: "no-store" as const } : { next: { revalidate: 3600 } })
+  });
 
-    if (!response.ok) {
-      throw new Error(`GitHub profile responded with ${response.status}`);
-    }
-
-    const html = await response.text();
-    const listStart = html.indexOf("js-pinned-items-reorder-list");
-    const listEnd = html.indexOf("</ol>", listStart);
-    const pinnedList = listStart >= 0 && listEnd >= 0 ? html.slice(listStart, listEnd) : "";
-    const names = [...pinnedList.matchAll(/href="\/Krishiv1611\/([^"]+)"/g)].map((match) =>
-      match[1].toLowerCase()
-    );
-    const uniqueNames = Array.from(new Set(names));
-
-    if (uniqueNames.length > 0) {
-      return new Map(uniqueNames.map((repoName, index) => [repoName, index]));
-    }
-  } catch {
-    // Keep the portfolio stable if GitHub profile HTML changes or rate-limits.
+  if (!response.ok) {
+    throw new Error(`GitHub profile responded with ${response.status}`);
   }
 
-  return new Map(pinnedRepoOrder.map((repoName, index) => [repoName.toLowerCase(), index]));
-}
+  const html = await response.text();
+  const listStart = html.indexOf("js-pinned-items-reorder-list");
+  const listEnd = html.indexOf("</ol>", listStart);
+  const pinnedList = listStart >= 0 && listEnd >= 0 ? html.slice(listStart, listEnd) : "";
+  const names = [...pinnedList.matchAll(/href="\/Krishiv1611\/([^"]+)"/g)].map((match) =>
+    match[1].toLowerCase()
+  );
+  const uniqueNames = Array.from(new Set(names));
 
+  if (uniqueNames.length === 0) {
+    throw new Error("GitHub did not return any public pinned repositories.");
+  }
+
+  return new Map(uniqueNames.map((repoName, index) => [repoName, index]));
+}
 export async function GET(request: Request) {
   try {
     const shouldRefresh = new URL(request.url).searchParams.has("refresh");
@@ -128,3 +120,5 @@ export async function GET(request: Request) {
     );
   }
 }
+
+

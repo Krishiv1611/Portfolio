@@ -1,256 +1,120 @@
 "use client";
 
-import { AnimatePresence, motion } from "framer-motion";
-import { MousePointer2 } from "lucide-react";
-import { useMemo, useState } from "react";
+import { animate } from "animejs";
+import { useEffect, useRef, useState } from "react";
 import { SectionHeading } from "@/components/ui/section-heading";
-import { skillPathways, techCategories } from "@/lib/profile";
+import { skillPathways } from "@/lib/profile";
 import { cn } from "@/lib/utils";
 
 type Pathway = (typeof skillPathways)[number];
 
 export function TechStackSection() {
-  const [activePathId, setActivePathId] = useState<Pathway["id"]>("frontend");
-  const [activeSkill, setActiveSkill] = useState("HTML");
-  const activePath = skillPathways.find((path) => path.id === activePathId) ?? skillPathways[0];
+  const [activePathId, setActivePathId] = useState<Pathway["id"]>("ai");
+  const detailRef = useRef<HTMLDivElement>(null);
+  const activeIndex = skillPathways.findIndex((path) => path.id === activePathId);
+  const activePath = skillPathways[activeIndex] ?? skillPathways[0];
 
-  const skillToPath = useMemo(() => {
-    const map = new Map<string, Pathway>();
-    skillPathways.forEach((path) => path.nodes.forEach((node) => map.set(node, path)));
-    return map;
-  }, []);
+  useEffect(() => {
+    const detail = detailRef.current;
+    if (!detail || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
-  function selectSkill(skill: string, preferredPathId?: Pathway["id"]) {
-    const normalizedSkill = normalizeSkill(skill);
-    const path =
-      (preferredPathId ? skillPathways.find((item) => item.id === preferredPathId) : undefined) ??
-      skillToPath.get(normalizedSkill);
-    if (!path) {
-      return;
-    }
-    setActivePathId(path.id);
-    setActiveSkill(normalizedSkill);
+    const control = animate(detail, {
+      opacity: [0, 1],
+      translateY: [10, 0],
+      duration: 380,
+      ease: "outExpo"
+    });
+
+    return () => {
+      control.revert();
+    };
+  }, [activePathId]);
+
+  function moveTab(currentIndex: number, direction: number) {
+    const nextIndex = (currentIndex + direction + skillPathways.length) % skillPathways.length;
+    const nextPath = skillPathways[nextIndex];
+    setActivePathId(nextPath.id);
+    window.requestAnimationFrame(() => {
+      document.getElementById(`skill-tab-${nextPath.id}`)?.focus();
+    });
   }
 
   return (
-    <section id="skills" className="section-shell relative py-24">
-      <SectionHeading eyebrow="Tech Stack" title="Interactive skill pathways, not a static logo wall.">
-        Click a skill and the connected stack lights up: frontend, backend, GenAI, and systems tooling.
-      </SectionHeading>
+    <section id="skills" className="section-band bg-canvas py-20 md:py-28">
+      <div className="section-shell">
+        <SectionHeading eyebrow="04 / Capabilities" title="A focused stack for systems I can ship.">
+          Technologies are grouped by responsibility, keeping the signal concise while preserving the full technical range from the resume.
+        </SectionHeading>
 
-      <div className="grid gap-5 lg:grid-cols-[0.84fr_1.16fr]">
-        <div className="space-y-4">
-          {techCategories.map((category, categoryIndex) => (
-            <motion.div
-              key={category.title}
-              className="glass rounded-3xl p-5"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-120px" }}
-              transition={{ delay: categoryIndex * 0.06 }}
-            >
-              <div className="mb-4 flex items-center gap-3">
-                <span className="rounded-2xl bg-primary/10 p-3 text-primary ring-1 ring-primary/15">
-                  <category.icon className="h-5 w-5" />
-                </span>
-                <h3 className="font-semibold text-white">{category.title}</h3>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {category.items.map((item) => {
-                  const normalizedItem = normalizeSkill(item);
-                  const selected =
-                    activeSkill === normalizedItem ||
-                    (activePath.nodes as readonly string[]).includes(normalizedItem);
-                  return (
-                    <button
-                      key={item}
-                      type="button"
-                      onClick={() => selectSkill(item)}
-                      className={cn(
-                        "focus-ring rounded-full border px-3 py-2 text-sm transition",
-                        selected
-                          ? "border-primary/45 bg-primary/10 text-white"
-                          : "border-white/10 bg-white/[0.035] text-slate-400 hover:border-white/20 hover:text-white"
-                      )}
-                    >
-                      {item}
-                    </button>
-                  );
-                })}
-              </div>
-            </motion.div>
-          ))}
-        </div>
-
-        <motion.div
-          className="glass overflow-hidden rounded-[32px] p-5 md:p-7"
-          initial={{ opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-120px" }}
-          transition={{ duration: 0.75 }}
-        >
-          <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <p className="flex items-center gap-2 text-sm text-slate-400">
-                <MousePointer2 className="h-4 w-4 text-primary" />
-                Tap any node to generate its path
-              </p>
-              <h3 className="mt-2 text-2xl font-semibold text-white">Skill Pathways</h3>
-            </div>
-            <div className="grid grid-cols-2 gap-2 sm:flex">
-              {skillPathways.map((path) => (
+        <div data-reveal className="grid gap-8 lg:grid-cols-[0.32fr_0.68fr] lg:gap-12">
+          <div className="border-t border-white/12" role="tablist" aria-label="Technical skill areas">
+            {skillPathways.map((path, index) => {
+              const selected = path.id === activePathId;
+              return (
                 <button
                   key={path.id}
+                  id={`skill-tab-${path.id}`}
                   type="button"
-                  onClick={() => {
-                    setActivePathId(path.id);
-                    setActiveSkill(path.nodes[0]);
+                  role="tab"
+                  aria-selected={selected}
+                  aria-controls="skill-panel"
+                  tabIndex={selected ? 0 : -1}
+                  onClick={() => setActivePathId(path.id)}
+                  onKeyDown={(event) => {
+                    if (event.key === "ArrowDown" || event.key === "ArrowRight") {
+                      event.preventDefault();
+                      moveTab(index, 1);
+                    }
+                    if (event.key === "ArrowUp" || event.key === "ArrowLeft") {
+                      event.preventDefault();
+                      moveTab(index, -1);
+                    }
                   }}
                   className={cn(
-                    "focus-ring rounded-full border px-3 py-2 text-xs font-semibold transition",
-                    activePathId === path.id
-                      ? "border-white/20 bg-white text-slate-950"
-                      : "border-white/10 bg-white/[0.035] text-slate-400 hover:text-white"
+                    "focus-ring flex min-h-14 w-full items-center justify-between border-b border-white/12 px-2 text-left transition-colors duration-200",
+                    selected ? "bg-white/[0.055] text-white" : "text-white/46 hover:bg-white/[0.025] hover:text-white/78"
                   )}
                 >
-                  {path.label}
+                  <span className="flex items-center gap-3 text-sm font-medium">
+                    <path.icon className="h-4 w-4" />
+                    {path.label}
+                  </span>
+                  <span className="font-mono text-[10px] text-white/26">0{index + 1}</span>
                 </button>
+              );
+            })}
+          </div>
+
+          <div
+            id="skill-panel"
+            ref={detailRef}
+            role="tabpanel"
+            aria-labelledby={`skill-tab-${activePath.id}`}
+            className="min-h-[330px] border border-white/12 bg-white/[0.018] p-6 md:p-9"
+          >
+            <div className="flex items-start justify-between gap-5 border-b border-white/12 pb-7">
+              <div>
+                <p className="font-mono text-[10px] uppercase text-white/30">Selected area</p>
+                <h3 className="mt-3 text-2xl font-semibold text-white md:text-3xl">{activePath.label}</h3>
+              </div>
+              <activePath.icon className="h-6 w-6 text-white/48" />
+            </div>
+
+            <p className="mt-7 max-w-2xl text-sm leading-7 text-white/50 md:text-base md:leading-8">
+              {activePath.summary}
+            </p>
+
+            <div className="mt-8 grid border-l border-t border-white/10 sm:grid-cols-2 md:grid-cols-3">
+              {activePath.nodes.map((node, index) => (
+                <div key={node} className="flex min-h-14 items-center border-b border-r border-white/10 px-4">
+                  <span className="mr-3 font-mono text-[9px] text-white/22">{String(index + 1).padStart(2, "0")}</span>
+                  <span className="text-sm font-medium text-white/72">{node}</span>
+                </div>
               ))}
             </div>
           </div>
-
-          <div className="space-y-5">
-            {skillPathways.map((path) => (
-              <PathwayRow
-                key={path.id}
-                path={path}
-                active={path.id === activePathId}
-                activeSkill={activeSkill}
-                onSelect={(skill) => selectSkill(skill, path.id)}
-              />
-            ))}
-          </div>
-
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={`${activePath.id}-${activeSkill}`}
-              className="mt-7 rounded-3xl border border-white/10 bg-slate-950/54 p-5"
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.28 }}
-            >
-              <div className="flex items-start gap-4">
-                <span
-                  className="rounded-2xl p-3 ring-1"
-                  style={{
-                    backgroundColor: `${activePath.color}18`,
-                    color: activePath.color,
-                    borderColor: `${activePath.color}33`
-                  }}
-                >
-                  <activePath.icon className="h-6 w-6" />
-                </span>
-                <div>
-                  <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">
-                    {activePath.label} path
-                  </p>
-                  <h4 className="mt-1 text-xl font-semibold text-white">{activeSkill}</h4>
-                  <p className="mt-3 leading-7 text-slate-300">{activePath.summary}</p>
-                </div>
-              </div>
-            </motion.div>
-          </AnimatePresence>
-        </motion.div>
-      </div>
-    </section>
-  );
-}
-
-function normalizeSkill(skill: string) {
-  const aliases: Record<string, string> = {
-    "React.js": "React",
-    "Neon": "Neon/PostgreSQL"
-  };
-
-  return aliases[skill] ?? skill;
-}
-
-function PathwayRow({
-  path,
-  active,
-  activeSkill,
-  onSelect
-}: {
-  path: Pathway;
-  active: boolean;
-  activeSkill: string;
-  onSelect: (skill: string) => void;
-}) {
-  return (
-    <motion.div
-      className={cn(
-        "rounded-3xl border p-4 transition",
-        active ? "border-white/15 bg-white/[0.045]" : "border-white/8 bg-white/[0.018] opacity-55"
-      )}
-      animate={{ opacity: active ? 1 : 0.52 }}
-    >
-      <div className="mb-4 flex items-center gap-3">
-        <span
-          className="rounded-xl p-2"
-          style={{ backgroundColor: `${path.color}16`, color: path.color }}
-        >
-          <path.icon className="h-4 w-4" />
-        </span>
-        <p className="text-sm font-semibold text-white">{path.label}</p>
-      </div>
-
-      <div className="overflow-x-auto pb-2">
-        <div className="flex min-w-max items-center">
-          {path.nodes.map((node, index) => {
-            const selected = active && activeSkill === node;
-            const pathActive = active;
-            return (
-              <div key={node} className="flex items-center">
-                <motion.button
-                  type="button"
-                  onClick={() => onSelect(node)}
-                  className={cn(
-                    "focus-ring relative rounded-full border px-4 py-2 text-sm font-medium transition",
-                    selected
-                      ? "border-white bg-white text-slate-950"
-                      : pathActive
-                        ? "border-white/15 bg-slate-950/62 text-white"
-                        : "border-white/10 bg-slate-950/38 text-slate-500"
-                  )}
-                  whileHover={{ y: -3, scale: 1.03 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  {selected ? (
-                    <motion.span
-                      layoutId="active-skill-glow"
-                      className="absolute inset-0 -z-10 rounded-full blur-xl"
-                      style={{ backgroundColor: `${path.color}55` }}
-                    />
-                  ) : null}
-                  {node}
-                </motion.button>
-
-                {index < path.nodes.length - 1 ? (
-                  <div className="relative h-px w-10 bg-white/10 sm:w-14">
-                    <motion.div
-                      className="absolute inset-y-0 left-0 origin-left"
-                      style={{ backgroundColor: path.color }}
-                      animate={{ scaleX: active ? 1 : 0 }}
-                      transition={{ duration: 0.55, delay: index * 0.06, ease: [0.22, 1, 0.36, 1] }}
-                    />
-                  </div>
-                ) : null}
-              </div>
-            );
-          })}
         </div>
       </div>
-    </motion.div>
+    </section>
   );
 }

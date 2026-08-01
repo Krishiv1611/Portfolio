@@ -1,55 +1,62 @@
 import type { Metadata, Viewport } from "next";
+import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
+const geist = Geist({
+  subsets: ["latin"],
+  variable: "--font-geist-sans",
+  display: "swap"
+});
+
+const geistMono = Geist_Mono({
+  subsets: ["latin"],
+  variable: "--font-geist-mono",
+  display: "swap"
+});
+
 export const metadata: Metadata = {
-  metadataBase: new URL("https://krishiv-portfolio.vercel.app"),
+  metadataBase: new URL("https://portfolio-nine-sand-10.vercel.app"),
   title: {
-    default: "Krishiv Arora | AI Engineer & Full Stack Developer",
+    default: "Krishiv Arora | Aspiring Full-Stack & AI Engineer",
     template: "%s | Krishiv Arora"
   },
   description:
-    "Premium portfolio of Krishiv Arora, an AI engineer and full-stack developer building GenAI, RAG, backend systems, and modern web products.",
+    "Portfolio of Krishiv Arora, a third-year B.Tech Computer Science student and GlobalLogic software engineering trainee building full-stack and applied AI systems.",
   keywords: [
     "Krishiv Arora",
-    "AI Engineer",
+    "Computer Science Student",
     "Full Stack Developer",
-    "GenAI",
+    "AI Engineer",
+    "LangGraph",
     "RAG",
-    "Next.js",
-    "LangChain",
-    "FastAPI"
+    "FastAPI",
+    "Next.js"
   ],
   authors: [{ name: "Krishiv Arora", url: "https://github.com/Krishiv1611" }],
   creator: "Krishiv Arora",
   openGraph: {
-    title: "Krishiv Arora | AI Engineer & Full Stack Developer",
+    title: "Krishiv Arora | Aspiring Full-Stack & AI Engineer",
     description:
-      "AI/full-stack portfolio featuring GenAI systems, public GitHub projects, LeetCode progress, and production-ready engineering work.",
-    url: "https://krishiv-portfolio.vercel.app",
+      "Third-year B.Tech CSE student building applied AI systems, developer tools, and full-stack products.",
+    url: "https://portfolio-nine-sand-10.vercel.app",
     siteName: "Krishiv Arora Portfolio",
+    images: [{ url: "/krishiv-avatar.png", width: 460, height: 460, alt: "Portrait of Krishiv Arora" }],
     type: "website"
   },
-  robots: {
-    index: true,
-    follow: true
-  }
+  robots: { index: true, follow: true }
 };
 
 export const viewport: Viewport = {
-  themeColor: "#05070b",
+  themeColor: "#050505",
   colorScheme: "dark",
   width: "device-width",
   initialScale: 1
 };
 
-export default function RootLayout({
-  children
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className="dark">
-      <body className="bg-ink font-sans antialiased">{children}</body>
+    <html lang="en" className={`${geist.variable} ${geistMono.variable}`}>
+      <body>{children}</body>
     </html>
   );
 }

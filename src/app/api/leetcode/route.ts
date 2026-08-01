@@ -1,39 +1,29 @@
-import { NextResponse } from "next/server";
+﻿import { NextResponse } from "next/server";
 import type { LeetCodeStats } from "@/lib/types";
 
-type LeetCodeProgressItem = {
-  difficulty: "EASY" | "MEDIUM" | "HARD" | "Easy" | "Medium" | "Hard";
-  count: number;
-};
-
+type ProgressItem = { difficulty: string; count: number };
 type LeetCodeResponse = {
   data?: {
     matchedUser?: {
       username: string;
-      profile?: {
-        ranking?: number | null;
-      };
+      profile?: { ranking?: number | null };
       submissionCalendar?: string;
-      submitStatsGlobal?: {
-        acSubmissionNum?: Array<{
-          difficulty: string;
-          count: number;
-        }>;
-      };
+      submitStatsGlobal?: { acSubmissionNum?: ProgressItem[] };
     };
-    userProfileUserQuestionProgressV2?: {
-      numAcceptedQuestions?: LeetCodeProgressItem[];
+    userContestRanking?: {
+      rating?: number | null;
+      globalRanking?: number | null;
+      attendedContestsCount?: number | null;
     };
   };
-  errors?: unknown[];
 };
 
 const USERNAME = "krishivarora25";
+export const revalidate = 1800;
 
-export const revalidate = 3600;
-
-export async function GET() {
+export async function GET(request: Request) {
   try {
+    const shouldRefresh = new URL(request.url).searchParams.has("refresh");
     const response = await fetch("https://leetcode.com/graphql", {
       method: "POST",
       headers: {
@@ -41,102 +31,68 @@ export async function GET() {
         Referer: `https://leetcode.com/u/${USERNAME}/`
       },
       body: JSON.stringify({
-        operationName: "portfolioLeetCodeStats",
-        variables: {
-          username: USERNAME,
-          userSlug: USERNAME
-        },
+        variables: { username: USERNAME },
         query: `
-          query portfolioLeetCodeStats($username: String!, $userSlug: String!) {
+          query portfolioStats($username: String!) {
             matchedUser(username: $username) {
               username
-              profile {
-                ranking
-              }
+              profile { ranking }
               submissionCalendar
-              submitStatsGlobal {
-                acSubmissionNum {
-                  difficulty
-                  count
-                }
-              }
+              submitStatsGlobal { acSubmissionNum { difficulty count } }
             }
-            userProfileUserQuestionProgressV2(userSlug: $userSlug) {
-              numAcceptedQuestions {
-                count
-                difficulty
-              }
+            userContestRanking(username: $username) {
+              rating
+              globalRanking
+              attendedContestsCount
             }
           }
         `
       }),
-      next: { revalidate: 3600 }
+      ...(shouldRefresh ? { cache: "no-store" as const } : { next: { revalidate: 1800 } })
     });
 
-    if (!response.ok) {
-      throw new Error(`LeetCode responded with ${response.status}`);
-    }
+    if (!response.ok) throw new Error(`LeetCode responded with ${response.status}`);
 
     const payload = (await response.json()) as LeetCodeResponse;
     const user = payload.data?.matchedUser;
+    if (!user) throw new Error("LeetCode profile was not found.");
 
-    if (!user) {
-      throw new Error("LeetCode profile was not found.");
-    }
-
-    const progress =
-      payload.data?.userProfileUserQuestionProgressV2?.numAcceptedQuestions ??
-      user.submitStatsGlobal?.acSubmissionNum ??
-      [];
-
+    const progress = user.submitStatsGlobal?.acSubmissionNum ?? [];
     const easySolved = getCount(progress, "Easy");
     const mediumSolved = getCount(progress, "Medium");
     const hardSolved = getCount(progress, "Hard");
-    const totalSolved = getCount(progress, "All") || easySolved + mediumSolved + hardSolved;
-    const calendar = parseCalendar(user.submissionCalendar);
+    const contest = payload.data?.userContestRanking;
 
     const stats: LeetCodeStats = {
       username: user.username,
       ranking: user.profile?.ranking ?? null,
-      contestRating: null,
-      totalSolved,
+      contestRating: contest?.rating ? Math.round(contest.rating) : null,
+      contestGlobalRanking: contest?.globalRanking ?? null,
+      contestsAttended: contest?.attendedContestsCount ?? null,
+      totalSolved: getCount(progress, "All") || easySolved + mediumSolved + hardSolved,
       easySolved,
       mediumSolved,
       hardSolved,
-      calendar
+      calendar: parseCalendar(user.submissionCalendar)
     };
 
-    return NextResponse.json(stats);
+    return NextResponse.json(stats, shouldRefresh ? { headers: { "Cache-Control": "no-store" } } : undefined);
   } catch (error) {
     return NextResponse.json(
-      {
-        username: USERNAME,
-        ranking: null,
-        totalSolved: 400,
-        easySolved: 160,
-        mediumSolved: 200,
-        hardSolved: 40,
-        calendar: {},
-        message: error instanceof Error ? error.message : "Unable to fetch LeetCode stats."
-      },
+      { message: error instanceof Error ? error.message : "Unable to fetch LeetCode stats." },
       { status: 502 }
     );
   }
 }
 
-function getCount(progress: Array<{ difficulty: string; count: number }>, target: string) {
-  const item = progress.find((entry) => entry.difficulty.toLowerCase() === target.toLowerCase());
-  return item?.count ?? 0;
+function getCount(progress: ProgressItem[], target: string) {
+  return progress.find((entry) => entry.difficulty.toLowerCase() === target.toLowerCase())?.count ?? 0;
 }
 
 function parseCalendar(calendar?: string) {
-  if (!calendar) {
-    return {};
-  }
-
+  if (!calendar) return {};
   try {
-    const parsed = JSON.parse(calendar) as Record<string, number>;
-    return parsed;
+    return JSON.parse(calendar) as Record<string, number>;
   } catch {
     return {};
   }

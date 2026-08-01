@@ -1,176 +1,135 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { ArrowDown, Code2, Download, Sparkles } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { createScope, createTimeline, set, stagger } from "animejs";
+import { ArrowDownRight, ArrowUpRight, Download, MapPin } from "lucide-react";
+import { useEffect, useRef } from "react";
 import { profile, socialLinks } from "@/lib/profile";
 
+const roleLines = ["Aspiring Full-Stack", "& AI Engineer."];
 export function HeroSection() {
-  const [taglineIndex, setTaglineIndex] = useState(0);
-  const [displayed, setDisplayed] = useState("");
-  const activeTagline = profile.taglines[taglineIndex];
+  const rootRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
-    let i = 0;
-    const interval = window.setInterval(() => {
-      setDisplayed(activeTagline.slice(0, i));
-      i += 1;
-      if (i >= activeTagline.length) {
-        window.clearInterval(interval);
-        window.setTimeout(() => {
-          setTaglineIndex((current) => (current + 1) % profile.taglines.length);
-        }, 1600);
-      }
-    }, 36);
+    const root = rootRef.current;
+    if (!root || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
-    return () => window.clearInterval(interval);
-  }, [activeTagline]);
+    const scope = createScope({ root }).add(() => {
+      set("[data-hero-kicker], [data-hero-copy], [data-hero-actions], [data-hero-social]", {
+        opacity: 0,
+        translateY: 20
+      });
+      set("[data-hero-line]", { opacity: 0, translateY: "105%" });
+      set("[data-hero-rule]", { scaleX: 0 });
 
-  const particles = useMemo(
-    () =>
-      Array.from({ length: 24 }, (_, index) => ({
-        id: index,
-        x: `${(index * 37) % 100}%`,
-        y: `${(index * 53) % 100}%`,
-        delay: (index % 8) * 0.18,
-        duration: 4 + (index % 5)
-      })),
-    []
-  );
+      createTimeline({ defaults: { ease: "outExpo" } })
+        .add("[data-hero-rule]", { scaleX: 1, duration: 1000 }, 0)
+        .add("[data-hero-kicker]", { opacity: 1, translateY: 0, duration: 600 }, 80)
+        .add(
+          "[data-hero-line]",
+          {
+            opacity: 1,
+            translateY: "0%",
+            delay: stagger(95),
+            duration: 820
+          },
+          170
+        )
+        .add("[data-hero-copy]", { opacity: 1, translateY: 0, duration: 650 }, 430)
+        .add("[data-hero-actions]", { opacity: 1, translateY: 0, duration: 580 }, 520)
+        .add("[data-hero-social]", { opacity: 1, translateY: 0, duration: 520 }, 600);
+    });
+
+    return () => scope.revert();
+  }, []);
 
   return (
-    <section id="home" className="section-shell relative flex min-h-screen items-center pb-24 pt-36">
-      <div className="absolute inset-0 -z-10 overflow-hidden">
-        {particles.map((particle) => (
-          <motion.span
-            key={particle.id}
-            className="absolute h-1 w-1 rounded-full bg-primary/60 shadow-[0_0_18px_rgba(103,232,249,0.65)]"
-            style={{ left: particle.x, top: particle.y }}
-            animate={{ opacity: [0.12, 0.85, 0.12], scale: [1, 1.8, 1], y: [-8, 12, -8] }}
-            transition={{
-              duration: particle.duration,
-              delay: particle.delay,
-              repeat: Infinity,
-              ease: "easeInOut"
-            }}
-          />
-        ))}
+    <section
+      ref={rootRef}
+      id="home"
+      className="relative min-h-[88svh] overflow-hidden bg-[#070707] text-white"
+    >
+      <div className="pointer-events-none absolute inset-0" aria-hidden="true">
+        <div className="absolute inset-x-0 top-[30%] border-t border-white/[0.055]" />
+        <div className="absolute inset-x-0 bottom-24 border-t border-white/[0.055]" />
+        <div className="absolute bottom-0 right-[10%] top-0 border-l border-white/[0.055]" />
+        <div
+          data-hero-rule
+          className="absolute left-0 top-[30%] h-px w-28 origin-left bg-white/45 sm:w-40"
+        />
       </div>
 
-      <div className="grid w-full items-center gap-12 lg:grid-cols-[1.05fr_0.95fr]">
-        <div>
-          <motion.div
-            className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-4 py-2 text-sm text-slate-300 backdrop-blur-xl"
-            initial={{ opacity: 0, y: 18 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.15 }}
+      <div className="section-shell relative z-10 flex min-h-[88svh] flex-col justify-end pb-8 pt-28 md:pb-10">
+        <div className="max-w-6xl">
+          <div
+            data-hero-kicker
+            className="mb-6 flex flex-wrap items-center gap-x-5 gap-y-2 font-mono text-[11px] uppercase text-white/58"
           >
-            <Sparkles className="h-4 w-4 text-primary" />
-            AI-native product engineering
-          </motion.div>
-
-          <motion.h1
-            className="text-balance text-5xl font-semibold tracking-tight text-white sm:text-6xl lg:text-7xl"
-            initial={{ opacity: 0, y: 28 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.25, ease: [0.22, 1, 0.36, 1] }}
-          >
-            {profile.name}
-            <span className="block bg-gradient-to-r from-primary via-accent to-violet bg-clip-text text-transparent">
-              {profile.title}
+            <span className="inline-flex items-center gap-2">
+              <span className="h-1.5 w-1.5 rounded-full bg-white/80" />
+              Third-year B.Tech Computer Science
             </span>
-          </motion.h1>
+            <span className="inline-flex items-center gap-2">
+              <MapPin className="h-3.5 w-3.5" />
+              {profile.location}
+            </span>
+          </div>
 
-          <motion.p
-            className="mt-6 min-h-14 max-w-2xl text-lg leading-8 text-slate-300 md:text-xl"
-            initial={{ opacity: 0, y: 28 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.38, ease: [0.22, 1, 0.36, 1] }}
-          >
-            {displayed}
-            <span className="ml-1 inline-block h-5 w-[2px] translate-y-1 bg-primary" />
-          </motion.p>
+          <h1 className="max-w-6xl font-semibold">
+            <span className="block overflow-hidden text-2xl text-white/72 md:text-3xl">
+              <span data-hero-line className="inline-block">Krishiv Arora.</span>
+            </span>
+            <span className="mt-3 block text-[2.55rem] leading-[1.02] sm:text-5xl md:text-6xl lg:text-7xl">
+              {roleLines.map((line) => (
+                <span key={line} className="block overflow-hidden pb-1">
+                  <span data-hero-line className="metal-text inline-block">{line}</span>
+                </span>
+              ))}
+            </span>
+          </h1>
 
-          <motion.div
-            className="mt-8 flex flex-col gap-3 sm:flex-row"
-            initial={{ opacity: 0, y: 24 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.52 }}
+          <p
+            data-hero-copy
+            className="mt-6 max-w-2xl text-base leading-7 text-white/64 md:text-lg md:leading-8"
           >
+            I am learning by building full-stack products and applied AI systems across interfaces, APIs, data, and agent workflows.
+          </p>
+
+          <div data-hero-actions className="mt-8 flex flex-col gap-3 sm:flex-row">
             <a
               href="#projects"
-              className="focus-ring group inline-flex items-center justify-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-semibold text-slate-950 transition hover:bg-primary"
+              className="pressable focus-ring inline-flex min-h-12 items-center justify-center gap-2 rounded-md bg-white px-5 text-sm font-semibold text-black hover:bg-white/86"
             >
-              View Projects
-              <ArrowDown className="h-4 w-4 transition group-hover:translate-y-0.5" />
+              View selected work
+              <ArrowDownRight className="h-4 w-4" />
             </a>
             <a
               href={profile.links.resume}
               download
-              className="focus-ring inline-flex items-center justify-center gap-2 rounded-full border border-white/12 bg-white/[0.04] px-6 py-3 text-sm font-semibold text-white transition hover:border-primary/40 hover:bg-primary/10"
+              className="pressable focus-ring inline-flex min-h-12 items-center justify-center gap-2 rounded-md border border-white/22 bg-white/[0.04] px-5 text-sm font-semibold text-white hover:border-white/40 hover:bg-white/[0.08]"
             >
               <Download className="h-4 w-4" />
-              Download Resume
+              Download resume
             </a>
-          </motion.div>
+          </div>
 
-          <motion.div
-            className="mt-7 flex items-center gap-3"
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.64 }}
-          >
+          <div data-hero-social className="mt-6 flex flex-wrap items-center gap-1">
             {socialLinks.map((link) => (
               <a
                 key={link.href}
                 href={link.href}
                 target={link.href.startsWith("http") ? "_blank" : undefined}
                 rel={link.href.startsWith("http") ? "noreferrer" : undefined}
-                className="focus-ring rounded-full border border-white/10 bg-white/[0.035] p-3 text-slate-300 transition hover:border-primary/40 hover:text-white"
-                aria-label={link.label}
+                className="pressable focus-ring inline-flex min-h-10 items-center gap-2 rounded-md px-3 text-xs text-white/52 hover:bg-white/[0.06] hover:text-white"
               >
-                <link.icon className="h-5 w-5" />
+                <link.icon className="h-3.5 w-3.5" />
+                {link.label}
+                {link.href.startsWith("http") ? <ArrowUpRight className="h-3 w-3" /> : null}
               </a>
             ))}
-          </motion.div>
+          </div>
         </div>
 
-        <motion.div
-          className="glass relative min-h-[420px] overflow-hidden rounded-[32px] p-6"
-          initial={{ opacity: 0, scale: 0.96, y: 24 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          transition={{ duration: 0.9, delay: 0.32, ease: [0.22, 1, 0.36, 1] }}
-        >
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(103,232,249,0.18),transparent_34%)]" />
-          <div className="relative flex h-full min-h-[372px] flex-col justify-between">
-            <div className="flex items-center justify-between text-sm text-slate-400">
-              <span>portfolio.kernel</span>
-              <Code2 className="h-5 w-5 text-primary" />
-            </div>
-            <div className="space-y-4 font-mono text-sm">
-              {[
-                ["engineer", "'Krishiv Arora'"],
-                ["focus", "['AI Agents', 'RAG', 'Backend Systems']"],
-                ["shipping", "'Synora | Career Pilot AI | RideMates'"],
-                ["status", "'open to high-impact engineering work'"]
-              ].map(([key, value], index) => (
-                <motion.div
-                  key={key}
-                  className="rounded-2xl border border-white/10 bg-slate-950/52 p-4"
-                  initial={{ opacity: 0, x: 26 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.65 + index * 0.12 }}
-                >
-                  <span className="text-violet">const </span>
-                  <span className="text-primary">{key}</span>
-                  <span className="text-slate-500"> = </span>
-                  <span className="text-accent">{value}</span>
-                  <span className="text-slate-500">;</span>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </motion.div>
+
       </div>
     </section>
   );

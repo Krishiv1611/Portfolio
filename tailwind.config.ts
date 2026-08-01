@@ -1,5 +1,5 @@
-import forms from "@tailwindcss/forms";
 import type { Config } from "tailwindcss";
+import forms from "@tailwindcss/forms";
 
 const config: Config = {
   darkMode: "class",
@@ -11,19 +11,21 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        ink: "#05070b",
-        panel: "rgba(12, 18, 29, 0.72)",
-        line: "rgba(148, 163, 184, 0.16)",
-        primary: "#67e8f9",
-        accent: "#a7f3d0",
-        violet: "#c4b5fd"
+        ink: "#050505",
+        graphite: "#101012",
+        canvas: "#08080a",
+        steel: "#18181c",
+        paper: "#f5f5f7",
+        muted: "#98989f",
+        dim: "#68686f",
+        line: "rgba(255, 255, 255, 0.12)",
+        primary: "#f5f5f7",
+        accent: "#c8c8ce",
+        coral: "#e8a2a2"
       },
       boxShadow: {
-        glow: "0 0 60px rgba(103, 232, 249, 0.16)",
-        card: "0 24px 80px rgba(0, 0, 0, 0.35)"
-      },
-      backgroundImage: {
-        "radial-soft": "radial-gradient(circle at top left, rgba(103,232,249,0.18), transparent 34%), radial-gradient(circle at 80% 10%, rgba(167,243,208,0.13), transparent 30%)"
+        card: "0 24px 72px rgba(0, 0, 0, 0.3)",
+        lift: "0 32px 90px rgba(0, 0, 0, 0.45)"
       }
     }
   },

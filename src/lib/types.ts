@@ -1,4 +1,4 @@
-export type GitHubRepo = {
+﻿export type GitHubRepo = {
   id: number;
   name: string;
   description: string;
@@ -12,10 +12,22 @@ export type GitHubRepo = {
   featured?: boolean;
 };
 
+export type GitHubStats = {
+  username: string;
+  publicRepos: number;
+  followers: number;
+  publicCommits: number;
+  contributionsLastYear: number;
+  contributionCalendar: Record<string, number>;
+  updatedAt: string;
+};
+
 export type LeetCodeStats = {
   username: string;
   ranking: number | null;
   contestRating: number | null;
+  contestGlobalRanking: number | null;
+  contestsAttended: number | null;
   totalSolved: number;
   easySolved: number;
   mediumSolved: number;

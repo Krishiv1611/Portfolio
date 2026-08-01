@@ -1,7 +1,7 @@
 "use client";
 
-import { animate, motion, useInView, useMotionValue, useTransform } from "framer-motion";
-import { useEffect, useRef } from "react";
+import { animate } from "animejs";
+import { useEffect, useRef, useState } from "react";
 
 type AnimatedCounterProps = {
   value: number;
@@ -9,28 +9,46 @@ type AnimatedCounterProps = {
   duration?: number;
 };
 
-export function AnimatedCounter({ value, suffix = "", duration = 1.4 }: AnimatedCounterProps) {
+export function AnimatedCounter({ value, suffix = "", duration = 1.2 }: AnimatedCounterProps) {
   const ref = useRef<HTMLSpanElement>(null);
-  const motionValue = useMotionValue(0);
-  const rounded = useTransform(motionValue, (latest) => Math.round(latest).toLocaleString());
-  const inView = useInView(ref, { once: true, margin: "-80px" });
+  const [display, setDisplay] = useState(0);
 
   useEffect(() => {
-    if (!inView) {
-      return;
+    const element = ref.current;
+    if (!element) return;
+
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      const frame = window.requestAnimationFrame(() => setDisplay(value));
+      return () => window.cancelAnimationFrame(frame);
     }
 
-    const controls = animate(motionValue, value, {
-      duration,
-      ease: [0.22, 1, 0.36, 1]
-    });
+    let control: ReturnType<typeof animate> | null = null;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) return;
 
-    return controls.stop;
-  }, [duration, inView, motionValue, value]);
+        const state = { value: 0 };
+        control = animate(state, {
+          value,
+          duration: duration * 1000,
+          ease: "outExpo",
+          onUpdate: () => setDisplay(Math.round(state.value))
+        });
+        observer.disconnect();
+      },
+      { rootMargin: "0px 0px -80px" }
+    );
+
+    observer.observe(element);
+    return () => {
+      observer.disconnect();
+      control?.revert();
+    };
+  }, [duration, value]);
 
   return (
     <span ref={ref}>
-      <motion.span>{rounded}</motion.span>
+      {display.toLocaleString()}
       {suffix}
     </span>
   );
