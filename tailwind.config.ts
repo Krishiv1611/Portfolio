@@ -2,7 +2,7 @@ import type { Config } from "tailwindcss";
 import forms from "@tailwindcss/forms";
 
 const config: Config = {
-  darkMode: "class",
+  darkMode: ["class", '[data-theme="daylight"]'],
   content: [
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
@@ -10,22 +10,30 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        sans: ["var(--font-geist-sans)", "-apple-system", "BlinkMacSystemFont", "sans-serif"],
+        mono: ["var(--font-geist-mono)", "'JetBrains Mono'", "monospace"],
+      },
       colors: {
-        ink: "#050505",
-        graphite: "#101012",
-        canvas: "#08080a",
-        steel: "#18181c",
-        paper: "#f5f5f7",
-        muted: "#98989f",
-        dim: "#68686f",
-        line: "rgba(255, 255, 255, 0.12)",
-        primary: "#f5f5f7",
-        accent: "#c8c8ce",
-        coral: "#e8a2a2"
+        canvas: "var(--bg-canvas)",
+        surface: "var(--bg-surface)",
+        subtle: "var(--bg-subtle)",
+        ink: {
+          primary: "var(--ink-primary)",
+          secondary: "var(--ink-secondary)",
+          tertiary: "var(--ink-tertiary)",
+        },
+        hairline: "var(--border-hairline)",
+        focus: "var(--border-focus)",
+        signal: "var(--accent-signal)",
+        verified: "var(--accent-verified)",
+      },
+      maxWidth: {
+        container: "1360px",
       },
       boxShadow: {
-        card: "0 24px 72px rgba(0, 0, 0, 0.3)",
-        lift: "0 32px 90px rgba(0, 0, 0, 0.45)"
+        blueprint: "0 20px 50px -10px rgba(0, 0, 0, 0.5), 0 0 0 1px var(--border-hairline)",
+        drawer: "-20px 0 60px rgba(0, 0, 0, 0.4)",
       }
     }
   },

@@ -1,145 +1,106 @@
 "use client";
 
-import { animate, createScope } from "animejs";
-import { Download, Menu, X } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
-import { navItems, profile } from "@/lib/profile";
-import { cn } from "@/lib/utils";
+import React, { useEffect, useState } from "react";
+import { Sun, Moon, FileText, ArrowUpRight } from "lucide-react";
+import { useTheme } from "@/components/theme-provider";
 
-export function Navbar() {
-  const rootRef = useRef<HTMLElement>(null);
-  const menuRef = useRef<HTMLDivElement>(null);
-  const [open, setOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
+interface NavbarProps {
+  onOpenResume: () => void;
+}
 
-  useEffect(() => {
-    const root = rootRef.current;
-    if (!root) return;
-
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-
-    const scope = createScope({ root }).add(() => {
-      animate("[data-nav-shell]", {
-        opacity: [0, 1],
-        translateY: [-14, 0],
-        duration: 700,
-        ease: "outExpo"
-      });
-    });
-
-    return () => scope.revert();
-  }, []);
+export function Navbar({ onOpenResume }: NavbarProps) {
+  const { theme, toggleTheme } = useTheme();
+  const [istTime, setIstTime] = useState<string>("");
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 36);
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-
-  useEffect(() => {
-    const menu = menuRef.current;
-    if (!menu) return;
-
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      menu.style.opacity = open ? "1" : "0";
-      menu.style.transform = open ? "translateY(0)" : "translateY(-10px)";
-      return;
-    }
-
-    const control = animate(menu, {
-      opacity: open ? [0, 1] : [1, 0],
-      translateY: open ? [-10, 0] : [0, -10],
-      duration: open ? 320 : 190,
-      ease: open ? "outExpo" : "inQuad"
-    });
-
-    return () => {
-      control.revert();
+    const updateTime = () => {
+      try {
+        const now = new Date();
+        const formatter = new Intl.DateTimeFormat("en-GB", {
+          timeZone: "Asia/Kolkata",
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+          hour12: false,
+        });
+        setIstTime(formatter.format(now));
+      } catch {
+        setIstTime("12:00:00");
+      }
     };
-  }, [open]);
-
-  useEffect(() => {
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setOpen(false);
-    };
-    window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
+    updateTime();
+    const interval = setInterval(updateTime, 1000);
+    return () => clearInterval(interval);
   }, []);
 
   return (
-    <header ref={rootRef} className="fixed inset-x-0 top-0 z-40">
-      <nav
-        data-nav-shell
-        aria-label="Primary navigation"
-        className={cn(
-          "border-b px-4 text-paper transition-[background-color,border-color] duration-300",
-          scrolled || open
-            ? "border-white/12 bg-ink/92 backdrop-blur-xl"
-            : "border-white/10 bg-ink/45 backdrop-blur-md"
-        )}
-      >
-        <div className="mx-auto flex h-[68px] max-w-[1240px] items-center justify-between">
-          <a href="#home" className="focus-ring rounded-sm text-sm font-semibold">
+    <header className="fixed top-0 left-0 right-0 z-40 bg-canvas/85 backdrop-blur-md hairline-b transition-colors duration-200">
+      <div className="max-w-[1360px] mx-auto px-6 md:px-12 h-16 flex items-center justify-between">
+        {/* Left: Identity & Live Telemetry */}
+        <div className="flex items-center gap-4">
+          <a
+            href="#"
+            className="font-medium text-ink-primary hover:text-signal transition-colors text-sm md:text-base tracking-tight"
+          >
             Krishiv Arora
           </a>
 
-          <div className="hidden items-center gap-1 lg:flex">
-            {navItems.map((item) => (
-              <a
-                key={item.href}
-                href={item.href}
-                className="focus-ring rounded-md px-3 py-2 text-sm text-white/58 transition-colors duration-200 hover:text-white"
-              >
-                {item.label}
-              </a>
-            ))}
+          <div className="hidden sm:flex items-center gap-2 font-mono text-xs text-ink-tertiary px-2.5 py-1 rounded bg-surface hairline-border">
+            <span className="w-1.5 h-1.5 rounded-full bg-verified animate-pulse" />
+            <span>New Delhi · IST</span>
+            <span className="text-ink-secondary tabular-nums">{istTime || "--:--:--"}</span>
           </div>
+        </div>
 
-          <a
-            href={profile.links.resume}
-            download
-            className="pressable focus-ring hidden min-h-10 items-center gap-2 rounded-md border border-white/16 bg-white/[0.06] px-4 text-sm font-medium text-white hover:border-white/32 hover:bg-white/[0.1] sm:flex"
-          >
-            <Download className="h-4 w-4" />
-            Resume
-          </a>
+        {/* Right: Navigation Anchors, Theme Toggle & Resume Drawer Trigger */}
+        <div className="flex items-center gap-3 md:gap-6">
+          <nav className="hidden md:flex items-center gap-5 text-xs font-mono uppercase tracking-wider text-ink-secondary">
+            <a
+              href="#systems"
+              className="hover:text-ink-primary transition-colors py-1 hover:border-b hover:border-signal"
+            >
+              Systems
+            </a>
+            <a
+              href="#about"
+              className="hover:text-ink-primary transition-colors py-1 hover:border-b hover:border-signal"
+            >
+              About
+            </a>
+            <a
+              href="#archive"
+              className="hover:text-ink-primary transition-colors py-1 hover:border-b hover:border-signal"
+            >
+              Archive
+            </a>
+          </nav>
 
+          <div className="h-4 w-px bg-hairline hidden md:block" />
+
+          {/* Theme Toggle */}
           <button
-            type="button"
-            className="pressable focus-ring flex h-11 w-11 items-center justify-center rounded-md border border-white/16 text-white lg:hidden"
-            onClick={() => setOpen((value) => !value)}
-            aria-label={open ? "Close navigation" : "Open navigation"}
-            aria-expanded={open}
-            aria-controls="mobile-navigation"
+            onClick={toggleTheme}
+            aria-label={`Switch to ${theme === "obsidian" ? "Daylight" : "Obsidian"} mode`}
+            className="p-2 rounded bg-surface hover:bg-subtle hairline-border text-ink-secondary hover:text-ink-primary transition-colors"
+            title={`Switch to ${theme === "obsidian" ? "Swiss Daylight" : "Obsidian Carbon"} mode`}
           >
-            {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            {theme === "obsidian" ? (
+              <Sun className="w-4 h-4 text-amber-400" />
+            ) : (
+              <Moon className="w-4 h-4 text-ink-primary" />
+            )}
+          </button>
+
+          {/* Resume Spec Drawer Trigger */}
+          <button
+            onClick={onOpenResume}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono rounded bg-surface hover:bg-subtle hairline-border text-ink-primary hover:border-focus transition-all group"
+          >
+            <FileText className="w-3.5 h-3.5 text-signal" />
+            <span>Resume</span>
+            <ArrowUpRight className="w-3 h-3 text-ink-tertiary group-hover:text-signal transition-colors" />
           </button>
         </div>
-      </nav>
-
-      <div
-        ref={menuRef}
-        id="mobile-navigation"
-        aria-hidden={!open}
-        className={cn(
-          "mx-3 mt-2 border border-white/12 bg-[#0a0a0c]/98 p-2 shadow-lift backdrop-blur-xl lg:hidden",
-          open ? "pointer-events-auto" : "pointer-events-none"
-        )}
-        style={{ opacity: 0, transform: "translateY(-10px)" }}
-      >
-        {navItems.map((item, index) => (
-          <a
-            key={item.href}
-            href={item.href}
-            tabIndex={open ? 0 : -1}
-            className="focus-ring flex min-h-12 items-center justify-between rounded-md px-4 text-sm text-white/66 transition-colors duration-200 hover:bg-white/[0.05] hover:text-white"
-            onClick={() => setOpen(false)}
-          >
-            {item.label}
-            <span className="font-mono text-[10px] text-white/28">0{index + 1}</span>
-          </a>
-        ))}
       </div>
     </header>
   );

@@ -35,7 +35,7 @@ export function ScrollProgress() {
   return (
     <div
       ref={progressRef}
-      className="fixed left-0 top-0 z-50 h-[2px] w-full origin-left scale-x-0 bg-white/80 will-change-transform"
+      className="fixed left-0 top-0 z-50 h-[2px] w-full origin-left scale-x-0 bg-signal will-change-transform"
       aria-hidden="true"
     />
   );

@@ -1,135 +1,242 @@
 "use client";
 
-import { createScope, createTimeline, set, stagger } from "animejs";
-import { ArrowDownRight, ArrowUpRight, Download, MapPin } from "lucide-react";
-import { useEffect, useRef } from "react";
-import { profile, socialLinks } from "@/lib/profile";
+import React, { useState } from "react";
+import { ArrowDown, Copy, Check, ExternalLink, FileText, Activity } from "lucide-react";
+import { IDENTITY } from "@/lib/systems-data";
 
-const roleLines = ["Aspiring Full-Stack", "& AI Engineer."];
-export function HeroSection() {
-  const rootRef = useRef<HTMLElement>(null);
+interface HeroSectionProps {
+  onOpenResume: () => void;
+  onSelectSystem?: (systemId: string) => void;
+}
 
-  useEffect(() => {
-    const root = rootRef.current;
-    if (!root || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+export function HeroSection({ onOpenResume, onSelectSystem }: HeroSectionProps) {
+  const [copied, setCopied] = useState(false);
 
-    const scope = createScope({ root }).add(() => {
-      set("[data-hero-kicker], [data-hero-copy], [data-hero-actions], [data-hero-social]", {
-        opacity: 0,
-        translateY: 20
-      });
-      set("[data-hero-line]", { opacity: 0, translateY: "105%" });
-      set("[data-hero-rule]", { scaleX: 0 });
+  const copyEmail = async () => {
+    try {
+      await navigator.clipboard.writeText(IDENTITY.email);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      window.location.href = `mailto:${IDENTITY.email}`;
+    }
+  };
 
-      createTimeline({ defaults: { ease: "outExpo" } })
-        .add("[data-hero-rule]", { scaleX: 1, duration: 1000 }, 0)
-        .add("[data-hero-kicker]", { opacity: 1, translateY: 0, duration: 600 }, 80)
-        .add(
-          "[data-hero-line]",
-          {
-            opacity: 1,
-            translateY: "0%",
-            delay: stagger(95),
-            duration: 820
-          },
-          170
-        )
-        .add("[data-hero-copy]", { opacity: 1, translateY: 0, duration: 650 }, 430)
-        .add("[data-hero-actions]", { opacity: 1, translateY: 0, duration: 580 }, 520)
-        .add("[data-hero-social]", { opacity: 1, translateY: 0, duration: 520 }, 600);
-    });
-
-    return () => scope.revert();
-  }, []);
+  const handleBenchmarkClick = (targetId: string) => {
+    if (onSelectSystem) {
+      onSelectSystem(targetId);
+    }
+    const element = document.getElementById(targetId);
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth" });
+    }
+  };
 
   return (
-    <section
-      ref={rootRef}
-      id="home"
-      className="relative min-h-[88svh] overflow-hidden bg-[#070707] text-white"
-    >
-      <div className="pointer-events-none absolute inset-0" aria-hidden="true">
-        <div className="absolute inset-x-0 top-[30%] border-t border-white/[0.055]" />
-        <div className="absolute inset-x-0 bottom-24 border-t border-white/[0.055]" />
-        <div className="absolute bottom-0 right-[10%] top-0 border-l border-white/[0.055]" />
-        <div
-          data-hero-rule
-          className="absolute left-0 top-[30%] h-px w-28 origin-left bg-white/45 sm:w-40"
-        />
-      </div>
+    <section className="min-h-[100dvh] pt-24 md:pt-32 pb-10 flex flex-col justify-between hairline-b bg-canvas relative">
+      <div className="max-w-[1360px] mx-auto px-6 md:px-12 w-full flex-1 flex flex-col justify-center">
+        {/* Main 12-Column Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-start py-8">
+          {/* Columns 1-8: Primary Thesis & Identity Statement */}
+          <div className="lg:col-span-8 flex flex-col">
+            {/* Identity Pre-title */}
+            <div className="flex items-center gap-3 mb-4">
+              <span className="font-mono text-xs text-signal tracking-wide uppercase font-semibold">
+                {IDENTITY.name}
+              </span>
+              <span className="text-ink-tertiary text-xs">/</span>
+              <span className="font-mono text-xs text-ink-tertiary">
+                {IDENTITY.role}
+              </span>
+            </div>
 
-      <div className="section-shell relative z-10 flex min-h-[88svh] flex-col justify-end pb-8 pt-28 md:pb-10">
-        <div className="max-w-6xl">
-          <div
-            data-hero-kicker
-            className="mb-6 flex flex-wrap items-center gap-x-5 gap-y-2 font-mono text-[11px] uppercase text-white/58"
-          >
-            <span className="inline-flex items-center gap-2">
-              <span className="h-1.5 w-1.5 rounded-full bg-white/80" />
-              Third-year B.Tech Computer Science
-            </span>
-            <span className="inline-flex items-center gap-2">
-              <MapPin className="h-3.5 w-3.5" />
-              {profile.location}
-            </span>
-          </div>
+            {/* Main Headline */}
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-sans tracking-tight text-ink-primary font-medium leading-[1.08] max-w-[20ch] mb-6">
+              {IDENTITY.headline}
+            </h1>
 
-          <h1 className="max-w-6xl font-semibold">
-            <span className="block overflow-hidden text-2xl text-white/72 md:text-3xl">
-              <span data-hero-line className="inline-block">Krishiv Arora.</span>
-            </span>
-            <span className="mt-3 block text-[2.55rem] leading-[1.02] sm:text-5xl md:text-6xl lg:text-7xl">
-              {roleLines.map((line) => (
-                <span key={line} className="block overflow-hidden pb-1">
-                  <span data-hero-line className="metal-text inline-block">{line}</span>
-                </span>
-              ))}
-            </span>
-          </h1>
+            {/* Lead Narrative */}
+            <p className="text-ink-secondary text-base md:text-lg leading-relaxed max-w-[62ch] mb-8 font-sans font-normal">
+              {IDENTITY.lead}
+            </p>
 
-          <p
-            data-hero-copy
-            className="mt-6 max-w-2xl text-base leading-7 text-white/64 md:text-lg md:leading-8"
-          >
-            I am learning by building full-stack products and applied AI systems across interfaces, APIs, data, and agent workflows.
-          </p>
-
-          <div data-hero-actions className="mt-8 flex flex-col gap-3 sm:flex-row">
-            <a
-              href="#projects"
-              className="pressable focus-ring inline-flex min-h-12 items-center justify-center gap-2 rounded-md bg-white px-5 text-sm font-semibold text-black hover:bg-white/86"
-            >
-              View selected work
-              <ArrowDownRight className="h-4 w-4" />
-            </a>
-            <a
-              href={profile.links.resume}
-              download
-              className="pressable focus-ring inline-flex min-h-12 items-center justify-center gap-2 rounded-md border border-white/22 bg-white/[0.04] px-5 text-sm font-semibold text-white hover:border-white/40 hover:bg-white/[0.08]"
-            >
-              <Download className="h-4 w-4" />
-              Download resume
-            </a>
-          </div>
-
-          <div data-hero-social className="mt-6 flex flex-wrap items-center gap-1">
-            {socialLinks.map((link) => (
+            {/* Primary Action Controls */}
+            <div className="flex flex-wrap items-center gap-3.5 mb-8">
               <a
-                key={link.href}
-                href={link.href}
-                target={link.href.startsWith("http") ? "_blank" : undefined}
-                rel={link.href.startsWith("http") ? "noreferrer" : undefined}
-                className="pressable focus-ring inline-flex min-h-10 items-center gap-2 rounded-md px-3 text-xs text-white/52 hover:bg-white/[0.06] hover:text-white"
+                href="#systems"
+                className="flex items-center gap-2 px-5 py-2.5 rounded bg-ink-primary text-canvas font-medium text-xs font-mono tracking-wide hover:opacity-90 transition-opacity"
               >
-                <link.icon className="h-3.5 w-3.5" />
-                {link.label}
-                {link.href.startsWith("http") ? <ArrowUpRight className="h-3 w-3" /> : null}
+                <span>Explore Selected Systems</span>
+                <ArrowDown className="w-3.5 h-3.5" />
               </a>
-            ))}
+
+              <button
+                onClick={onOpenResume}
+                className="flex items-center gap-2 px-4 py-2.5 rounded bg-surface hairline-border hover:bg-subtle text-ink-primary text-xs font-mono transition-colors"
+              >
+                <FileText className="w-3.5 h-3.5 text-signal" />
+                <span>Inspect Resume Sheet</span>
+              </button>
+
+              {/* Instant Copy Email Button */}
+              <button
+                onClick={copyEmail}
+                className="flex items-center gap-2 px-4 py-2.5 rounded bg-surface hairline-border hover:bg-subtle text-ink-secondary hover:text-ink-primary text-xs font-mono transition-colors"
+                title="Copy email to clipboard"
+              >
+                {copied ? (
+                  <>
+                    <Check className="w-3.5 h-3.5 text-verified" />
+                    <span className="text-verified font-medium">Copied to clipboard</span>
+                  </>
+                ) : (
+                  <>
+                    <Copy className="w-3.5 h-3.5 text-ink-tertiary" />
+                    <span>{IDENTITY.email}</span>
+                  </>
+                )}
+              </button>
+            </div>
+
+            {/* Secondary Direct Profiles */}
+            <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-xs font-mono text-ink-tertiary pt-4 hairline-t">
+              <a
+                href={IDENTITY.links.github}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1.5 hover:text-signal transition-colors"
+              >
+                <span>GitHub (@Krishiv1611)</span>
+                <ExternalLink className="w-3 h-3" />
+              </a>
+
+              <a
+                href={IDENTITY.links.linkedin}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1.5 hover:text-signal transition-colors"
+              >
+                <span>LinkedIn (/in/krishivarora25)</span>
+                <ExternalLink className="w-3 h-3" />
+              </a>
+
+              <a
+                href={IDENTITY.links.leetcode}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1.5 hover:text-signal transition-colors"
+              >
+                <span>LeetCode (1,625 · 500+ Solved)</span>
+                <ExternalLink className="w-3 h-3" />
+              </a>
+
+              <a
+                href={IDENTITY.links.codechef}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1.5 hover:text-signal transition-colors"
+              >
+                <span>CodeChef (3★)</span>
+                <ExternalLink className="w-3 h-3" />
+              </a>
+            </div>
+          </div>
+
+          {/* Columns 9-12: Architectural Context Rail */}
+          <div className="lg:col-span-4 bg-surface p-6 rounded hairline-border flex flex-col gap-6">
+            <div className="flex items-center justify-between hairline-b pb-3">
+              <span className="font-mono text-xs uppercase tracking-wider text-ink-tertiary">
+                System Context
+              </span>
+              <span className="w-2 h-2 rounded-full bg-verified" title="Active development record" />
+            </div>
+
+            {/* Experience Spec */}
+            <div className="flex flex-col gap-1.5">
+              <span className="font-mono text-[11px] text-ink-tertiary uppercase tracking-wider">
+                Recent Engineering
+              </span>
+              <div className="text-sm font-medium text-ink-primary">
+                {IDENTITY.contextRail.recent.role}
+              </div>
+              <div className="text-xs text-ink-secondary">
+                {IDENTITY.contextRail.recent.company} · {IDENTITY.contextRail.recent.timeline}
+              </div>
+              <div className="text-xs font-mono text-signal mt-1">
+                ↳ {IDENTITY.contextRail.recent.note}
+              </div>
+            </div>
+
+            <div className="h-px bg-hairline" />
+
+            {/* Focus Areas */}
+            <div className="flex flex-col gap-2">
+              <span className="font-mono text-[11px] text-ink-tertiary uppercase tracking-wider">
+                Focus Areas
+              </span>
+              <div className="grid grid-cols-1 gap-1.5">
+                {IDENTITY.contextRail.focusAreas.map((focus) => (
+                  <div key={focus} className="flex items-center gap-2 text-xs font-mono text-ink-secondary">
+                    <span className="text-signal text-[10px]">■</span>
+                    <span>{focus}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="h-px bg-hairline" />
+
+            {/* Academic Base */}
+            <div className="flex flex-col gap-1">
+              <span className="font-mono text-[11px] text-ink-tertiary uppercase tracking-wider">
+                Academic Base
+              </span>
+              <div className="text-xs font-medium text-ink-primary">
+                {IDENTITY.contextRail.education.degree}
+              </div>
+              <div className="text-xs text-ink-secondary">
+                {IDENTITY.contextRail.education.institution} ({IDENTITY.contextRail.education.timeline})
+              </div>
+              <div className="text-[11px] font-mono text-verified mt-0.5">
+                CGPA: {IDENTITY.contextRail.education.cgpa}
+              </div>
+            </div>
           </div>
         </div>
+      </div>
 
+      {/* Viewport Bottom: Interactive System Telemetry Bar */}
+      <div className="w-full hairline-t bg-surface/60 backdrop-blur-sm mt-6">
+        <div className="max-w-[1360px] mx-auto px-6 md:px-12 py-3.5">
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            <div className="flex items-center gap-2 font-mono text-xs text-ink-tertiary uppercase tracking-wider">
+              <Activity className="w-3.5 h-3.5 text-signal" />
+              <span>Verified Systems Telemetry</span>
+            </div>
 
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 w-full md:w-auto">
+              {IDENTITY.telemetryMetrics.map((item) => (
+                <button
+                  key={item.targetId}
+                  onClick={() => handleBenchmarkClick(item.targetId)}
+                  className="flex flex-col sm:items-start text-left p-2.5 rounded bg-subtle/50 hover:bg-subtle hairline-border transition-colors group cursor-pointer"
+                >
+                  <div className="flex items-center justify-between w-full gap-2">
+                    <span className="text-[11px] font-mono text-ink-secondary group-hover:text-signal transition-colors">
+                      {item.tag}
+                    </span>
+                    <span className="text-[10px] font-mono text-verified bg-verified/10 px-1.5 py-0.5 rounded">
+                      {item.delta}
+                    </span>
+                  </div>
+                  <div className="text-xs font-mono font-semibold text-ink-primary mt-1 tabular-nums">
+                    {item.metric}
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
       </div>
     </section>
   );
